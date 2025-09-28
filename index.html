@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>සිසුන්ගේ විස්තර ඇතුළත් කිරීම</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #barcode-container {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        #barcode-text {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2em;
+            color: #000;
+            background-color: #fff;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: inline-block;
+            word-break: break-all;
+        }
+        .message {
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>සිසුන්ගේ විස්තර ඇතුළත් කිරීම</h1>
+    <form id="student-form">
+        <div class="form-group">
+            <label for="name">නම:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="class">පන්තිය:</label>
+            <input type="text" id="class" name="class" required>
+        </div>
+        <div class="form-group">
+            <label for="destiny">ඉරණම:</label>
+            <input type="text" id="destiny" name="destiny" required>
+        </div>
+        <div class="form-group">
+            <label for="email">ඊමේල්:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">දුරකථන අංකය:</label>
+            <input type="tel" id="phone" name="phone" required>
+        </div>
+        <div class="form-group">
+            <label for="parents_phone">දෙමාපියන්ගේ දුරකථන අංකය:</label>
+            <input type="tel" id="parents_phone" name="parents_phone" required>
+        </div>
+        <div class="form-group">
+            <label for="current_duty">වත්මන් රාජකාරිය:</label>
+            <input type="text" id="current_duty" name="current_duty" required>
+        </div>
+        <div class="form-group">
+            <label for="school_index_number">පාසල් දර්ශක අංකය:</label>
+            <input type="text" id="school_index_number" name="school_index_number" required>
+        </div>
+        <div class="form-group">
+            <label for="prefect_unique_id">ප්‍රීෆෙක්ට් අනන්‍ය අංකය:</label>
+            <input type="text" id="prefect_unique_id" name="prefect_unique_id" required>
+        </div>
+        <div class="form-group">
+            <label for="section">කොටස:</label>
+            <input type="text" id="section" name="section" required>
+        </div>
+        
+        <button type="submit">දත්ත ඇතුළත් කර Barcode එක ලබා ගන්න</button>
+    </form>
+
+    <div id="barcode-container" style="display:none;">
+        <p class="message">ඔබේ Barcode ID එක පහතින් දැක්වේ:</p>
+        <span id="barcode-text"></span>
+    </div>
+</div>
+
+<script>
+    const webAppUrl = 'your_deployed_web_app_url_here'; // මෙතැනට ඔබේ URL එක ඇතුළත් කරන්න
+
+    document.getElementById('student-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        const data = {};
+        formData.forEach((value, key) => (data[key] = value));
+
+        fetch(webAppUrl, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                const barcodeData = result.barcode_id;
+                
+                const barcodeContainer = document.getElementById('barcode-container');
+                const barcodeText = document.getElementById('barcode-text');
+
+                barcodeText.textContent = barcodeData;
+                barcodeContainer.style.display = 'block';
+
+                alert('දත්ත සාර්ථකව යොමු කරන ලදී!');
+            } else {
+                alert('දත්ත යැවීමේදී දෝෂයක් සිදුවිය.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('දත්ත යැවීමේදී දෝෂයක් සිදුවිය.');
+        });
+    });
+</script>
+
+</body>
+</html>
